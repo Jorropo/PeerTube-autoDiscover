@@ -30,7 +30,7 @@ try: #try for don't crash on ctrl + C
 except:
     print("canceled")
 
-print("All nodes lists : (" + len(allNode) + " nodes finded)")
+print("All nodes lists : (" + str(len(allNode)) + " nodes finded)")
 
 for i in allNode:
     print(i)
