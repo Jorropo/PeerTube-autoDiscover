@@ -45,3 +45,5 @@ for i in allNode:
         except:
             sys.stderr.write("instances list don't like me\n")
         sys.stdout.write(i+"\n")
+
+os.exit(1)

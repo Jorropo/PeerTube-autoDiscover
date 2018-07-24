@@ -36,3 +36,5 @@ except:
 
 for i in allNode:
     sys.stdout.write(i+"\n")
+
+os.exit(1)
