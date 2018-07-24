@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 import json
 import sys
-import os
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 toScan = []
 
-if len(sys.argv) != 1:
+if len(sys.argv) != 2:
     print("Wrong argument ammount, give one argument, entry node without https")
-    os.exit(2)
+    sys.exit(2)
 
 toScan.append(sys.argv[1])
 allNode = toScan.copy()
