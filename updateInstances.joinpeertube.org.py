@@ -20,21 +20,24 @@ for i in json.loads(urlopen(Request("https://instances.joinpeertube.org/api/v1/i
 
 try: #try for don't crash on ctrl + C
     while len(toScan) > 0:
+        searchIng = toScan.pop(0)
         try: #try for don't crash on urllib fail
-            searchIng = toScan.pop(0)
             for i in json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/following?count="+str(json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/following?count=0"), timeout=15).read().decode())["total"])), timeout=15).read().decode())["data"]:
                 if i["following"]["host"] not in allNode and i["state"] == "accepted":
                     allNode.append(i["following"]["host"])
                     toScan.append(i["following"]["host"])
-                    if i["following"]["host"] not in instancesList:
-                        try:
-                            urlopen(Request("https://instances.joinpeertube.org/api/v1/instances",urlencode({"host":i["following"]["host"]}).encode())).read().decode()
-                        except:
-                            sys.stderr.write("instances list don't like me\n")
-                        sys.stdout.write(i["following"]["host"]+"\n")
         except KeyboardInterrupt:
             raise Exception('Pass out this error.')
         except:
-            sys.stderr.write("error on contacting a node\n")
+            allNode.remove(searchIng)
+            sys.stderr.write("error on contacting " + searchIng + "\n")
 except:
     sys.stderr.write("canceled\n")
+
+for i in allNode:
+    if i not in instancesList:
+        try:
+            urlopen(Request("https://instances.joinpeertube.org/api/v1/instances",urlencode({"host":i}).encode())).read().decode()
+        except:
+            sys.stderr.write("instances list don't like me\n")
+        sys.stdout.write(i+"\n")
