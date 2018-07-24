@@ -15,6 +15,7 @@ allNode = toScan.copy()
 
 try: #try for don't crash on ctrl + C
     while len(toScan) > 0:
+        print("Staying to scan : " + str(len(toScan)))
         try: #try for don't crash on urllib fail
             searchIng = toScan.pop(0)
             for i in json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/following")).read().decode())["data"]:
