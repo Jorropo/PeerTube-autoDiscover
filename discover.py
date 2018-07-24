@@ -8,7 +8,7 @@ toScan = []
 allNode = []
 
 if len(sys.argv) != 2:
-    sys.stderr.write("Wrong argument ammount, give one argument, entry node without https")
+    sys.stderr.write("Wrong argument ammount, give one argument, entry node without https\n")
     sys.exit(2)
 
 toScan.append(sys.argv[1])
@@ -26,6 +26,6 @@ try: #try for don't crash on ctrl + C
         except KeyboardInterrupt:
             raise Exception('Pass out this error.')
         except:
-            sys.stderr.write("error on contacting a node")
+            sys.stderr.write("error on contacting a node\n")
 except:
-    sys.stderr.write("canceled")
+    sys.stderr.write("canceled\n")
