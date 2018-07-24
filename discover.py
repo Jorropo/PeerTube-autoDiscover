@@ -19,7 +19,7 @@ try: #try for don't crash on ctrl + C
         try: #try for don't crash on urllib fail
             searchIng = toScan.pop(0)
             for i in json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/following?count="+str(json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/following?count=0"), timeout=15).read().decode())["total"])), timeout=15).read().decode())["data"]:
-                if i["following"]["host"] not in allNode:
+                if i["following"]["host"] not in allNode and i["state"] == "accepted":
                     allNode.append(i["following"]["host"])
                     toScan.append(i["following"]["host"])
                     sys.stdout.write(i["following"]["host"]+"\n")
