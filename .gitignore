@@ -1,3 +1,7 @@
+# Project ignore
+secret.json
+
+# Default python ignore (thx github)
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
