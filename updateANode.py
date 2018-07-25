@@ -52,7 +52,7 @@ except:
 #-----------------------------------------leave and error on empty list
 allNode.remove(key["node"])#don't send them self to the node we are seeding
 if len(allNode) == 0:
-    sys.stderr.write("node other node than original were found, you must follow or been followed by an already integreated node\n")
+    sys.stderr.write("node other node than original were found, you must follow or been followed by an already integrated node\n")
     sys.exit(3)
 
 #-----------------------------------------result usage
