@@ -8,15 +8,16 @@ toScan = []
 allNode = []
 instancesList = []
 
-if len(sys.argv) != 2:
-    sys.stderr.write("Wrong argument ammount, give one argument, entry node without https\n")
-    sys.exit(2)
-
-toScan.append(sys.argv[1])
-allNode.append(sys.argv[1])
-
 for i in json.loads(urlopen(Request("https://instances.joinpeertube.org/api/v1/instances?start=0&count="+str(json.loads(urlopen(Request("https://instances.joinpeertube.org/api/v1/instances?start=0&count=0"), timeout=15).read().decode())["total"])), timeout=15).read().decode())["data"]:
     instancesList.append(i["host"])
+
+if len(sys.argv) != 2:
+    sys.stderr.write("Wrong argument ammount, give one argument, entry node without https, use instances list to seed\n")
+    toScan = instancesList.copy()
+else:
+    toScan.append(sys.argv[1])
+
+allNode = toScan.copy()
 
 try: #try for don't crash on ctrl + C
     while len(toScan) > 0:
@@ -46,4 +47,4 @@ for i in allNode:
             sys.stderr.write("instances list don't like me\n")
         sys.stdout.write(i+"\n")
 
-os.exit(1)
+sys.exit(1)
