@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
+#-----------------------------------------import
 import json
 import sys
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+#-----------------------------------------global declaration
 toScan = []
 allNode = []
 instancesList = []
 
+#-----------------------------------------getting instances list status
 for i in json.loads(urlopen(Request("https://instances.joinpeertube.org/api/v1/instances?start=0&count="+str(json.loads(urlopen(Request("https://instances.joinpeertube.org/api/v1/instances?start=0&count=0"), timeout=15).read().decode())["total"])), timeout=15).read().decode())["data"]:
     instancesList.append(i["host"])
 
+#-----------------------------------------argument processing
 if len(sys.argv) != 2:
     sys.stderr.write("Wrong argument ammount, give one argument, entry node without https, use instances list to seed\n")
     toScan = instancesList.copy()
@@ -19,6 +23,7 @@ else:
 
 allNode = toScan.copy()
 
+#-----------------------------------------discovery
 try: #try for don't crash on ctrl + C
     while len(toScan) > 0:
         searchIng = toScan.pop(0)
@@ -41,6 +46,7 @@ try: #try for don't crash on ctrl + C
 except:
     sys.stderr.write("canceled\n")
 
+#-----------------------------------------result usage
 for i in allNode:
     if i not in instancesList:
         try:
@@ -49,4 +55,5 @@ for i in allNode:
             sys.stderr.write("instances list don't like me for node : " + i + "\n")
         sys.stdout.write(i+"\n")
 
+#-----------------------------------------finish
 sys.exit(1)
