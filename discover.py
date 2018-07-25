@@ -32,7 +32,7 @@ try: #try for don't crash on ctrl + C
                     allNode.append(t)
                     toScan.append(t)
             for i in json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/followers?count="+str(json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/followers?count=0"), timeout=15).read().decode())["total"])), timeout=15).read().decode())["data"]:
-                t = i["followers"]["host"]
+                t = i["follower"]["host"]
                 if t not in allNode:
                     allNode.append(t)
                     toScan.append(t)
