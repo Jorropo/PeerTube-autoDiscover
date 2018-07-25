@@ -2,6 +2,7 @@
 #-----------------------------------------import
 import json
 import sys
+import os
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -10,27 +11,20 @@ toScan = []
 allNode = []
 instancesList = []
 key = []
+node = ""
 
 #-----------------------------------------key conf loading
 if not os.path.exists("secret.json"):
     print("you don't have any key configuration, let's do one right know")#use print for crash with broken pipe if there isn't any conf
-    st = '{\n    account:"'+input("account name (with admin right) ? ")+'",\n    password:"'+input("accout password ? ")+'"\n}'#use a temp string for one step make memory foot print bigger but if user cancel this no empty file will be created
-	f = open("secret.json","w")
-	f.write(st)
-	f.close()
+    st = '{\n    "node":"'+input("node name (without https://) ? ")+'",\n    "account":"'+input("account name (with admin right) ? ")+'",\n    "password":"'+input("accout password ? ")+'"\n}\n'#use a temp string for one step make memory foot print bigger but if user cancel this no empty file will be created
+    f = open("secret.json","w")
+    f.write(st)
+    f.close()
 f = open("secret.json","r")
 key = json.loads(f.read())
 f.close()
 
-#-----------------------------------------argument processing
-if len(sys.argv) != 2:
-    sys.stderr.write("Wrong argument ammount, give one argument, entry node without https, use instances list to seed\n")
-    for i in json.loads(urlopen(Request("https://instances.joinpeertube.org/api/v1/instances?start=0&count="+str(json.loads(urlopen(Request("https://instances.joinpeertube.org/api/v1/instances?start=0&count=0"), timeout=15).read().decode())["total"])), timeout=15).read().decode())["data"]:
-        instancesList.append(i["host"])
-    toScan = instancesList.copy()
-else:
-    toScan.append(sys.argv[1])
-
+toScan.append(key["node"])
 allNode = toScan.copy()
 
 #-----------------------------------------discovery
@@ -57,8 +51,9 @@ except:
     sys.stderr.write("canceled\n")
 
 #-----------------------------------------result usage
-for i in allNode:
-    sys.stdout.write(i+"\n")
-
+r = json.loads(urlopen(Request("https://"+key["node"]+"/api/v1/oauth-clients/local"),timeout=15).read().decode())
+token = json.loads(urlopen(Request("https://"+key["node"]+"/api/v1/users/token",urlencode({"client_id":r["client_id"],"client_secret":r["client_secret"],"grant_type":"password","response_type":"code","username":key["account"],"password":key["password"]}).encode()),timeout=15).read().decode())
+allNode.remove(key["node"])#don't send them self to the node we are seeding
+urlopen(Request("https://"+key["node"]+"/api/v1/server/following",urlencode({"hosts":allNode}).encode(),headers={"Authorization":"Bearer "+token["access_token"]}),timeout=15).read().decode()
 #-----------------------------------------finish
 sys.exit(1)
