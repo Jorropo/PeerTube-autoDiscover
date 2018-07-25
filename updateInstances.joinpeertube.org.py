@@ -22,15 +22,17 @@ allNode = toScan.copy()
 try: #try for don't crash on ctrl + C
     while len(toScan) > 0:
         searchIng = toScan.pop(0)
-        try: #try for don't crash on urllib fail
+        try: #try for don't crash on urllib failfail
             for i in json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/following?count="+str(json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/following?count=0"), timeout=15).read().decode())["total"])), timeout=15).read().decode())["data"]:
-                if i["following"]["host"] not in allNode:
-                    allNode.append(i["following"]["host"])
-                    toScan.append(i["following"]["host"])
+                t = i["following"]["host"]
+                if t not in allNode:
+                    allNode.append(t)
+                    toScan.append(t)
             for i in json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/followers?count="+str(json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/followers?count=0"), timeout=15).read().decode())["total"])), timeout=15).read().decode())["data"]:
-                if i["followers"]["host"] not in allNode:
-                    allNode.append(i["followers"]["host"])
-                    toScan.append(i["followers"]["host"])
+                t = i["followers"]["host"]
+                if t not in allNode:
+                    allNode.append(t)
+                    toScan.append(t)
         except KeyboardInterrupt:
             raise Exception('Pass out this error.')
         except:
@@ -42,9 +44,9 @@ except:
 for i in allNode:
     if i not in instancesList:
         try:
-            urlopen(Request("https://instances.joinpeertube.org/api/v1/instances",urlencode({"host":i}).encode())).read().decode()
+            urlopen(Request("https://instances.joinpeertube.org/api/v1/instances",urlencode({"host":i}).encode()),timeout=15).read().decode()
         except:
-            sys.stderr.write("instances list don't like me\n")
+            sys.stderr.write("instances list don't like me for node : " + i + "\n")
         sys.stdout.write(i+"\n")
 
 sys.exit(1)
