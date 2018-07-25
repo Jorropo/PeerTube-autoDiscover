@@ -11,7 +11,6 @@ toScan = []
 allNode = []
 instancesList = []
 key = []
-node = ""
 
 #-----------------------------------------key conf loading
 if not os.path.exists("secret.json"):
@@ -50,10 +49,15 @@ try: #try for don't crash on ctrl + C
 except:
     sys.stderr.write("canceled\n")
 
+#-----------------------------------------leave and error on empty list
+allNode.remove(key["node"])#don't send them self to the node we are seeding
+if len(allNode) == 0:
+    sys.stderr.write("node other node than original were found, you must follow or been followed by an already integreated node\n")
+    sys.exit(3)
+
 #-----------------------------------------result usage
 r = json.loads(urlopen(Request("https://"+key["node"]+"/api/v1/oauth-clients/local"),timeout=15).read().decode())
 token = json.loads(urlopen(Request("https://"+key["node"]+"/api/v1/users/token",urlencode({"client_id":r["client_id"],"client_secret":r["client_secret"],"grant_type":"password","response_type":"code","username":key["account"],"password":key["password"]}).encode()),timeout=15).read().decode())
-allNode.remove(key["node"])#don't send them self to the node we are seeding
-urlopen(Request("https://"+key["node"]+"/api/v1/server/following",urlencode({"hosts":allNode}).encode(),headers={"Authorization":"Bearer "+token["access_token"]}),timeout=15).read().decode()
+urlopen(Request("https://"+key["node"]+"/api/v1/server/following",(json.dumps({"hosts":allNode})+"\n").encode("ascii"),headers={"Authorization":"Bearer "+token["access_token"],"Content-Type":"application/json"}),timeout=15).read().decode()
 #-----------------------------------------finish
 sys.exit(1)
