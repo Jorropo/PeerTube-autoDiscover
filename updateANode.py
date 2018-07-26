@@ -13,6 +13,7 @@ instancesList = []
 key = []
 
 #-----------------------------------------key conf loading
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 if not os.path.exists("secret.json"):
     print("you don't have any key configuration, let's do one right know")#use print for crash with broken pipe if there isn't any conf
     st = '{\n    "node":"'+input("node name (without https://) ? ")+'",\n    "account":"'+input("account name (with admin right) ? ")+'",\n    "password":"'+input("accout password ? ")+'"\n}\n'#use a temp string for one step make memory foot print bigger but if user cancel this no empty file will be created
