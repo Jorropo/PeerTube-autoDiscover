@@ -9,6 +9,7 @@ from urllib.request import Request, urlopen
 #-----------------------------------------global declaration
 toScan = []
 allNode = []
+goodNode = []
 instancesList = []
 key = []
 
@@ -42,23 +43,23 @@ try: #try for don't crash on ctrl + C
                 if t not in allNode:
                     allNode.append(t)
                     toScan.append(t)
+            goodNode.append(searchIng)
         except KeyboardInterrupt:
             raise Exception('Pass out this error.')
         except:
-            allNode.remove(searchIng)
             sys.stderr.write("error on contacting " + searchIng + "\n")
 except:
     sys.stderr.write("canceled\n")
 
 #-----------------------------------------leave and error on empty list
 allNode.remove(key["node"])#don't send them self to the node we are seeding
-if len(allNode) == 0:
+if len(goodNode) == 0:
     sys.stderr.write("node other node than original were found, you must follow or been followed by an already integrated node\n")
     sys.exit(3)
 
 #-----------------------------------------result usage
 r = json.loads(urlopen(Request("https://"+key["node"]+"/api/v1/oauth-clients/local"),timeout=15).read().decode())
 token = json.loads(urlopen(Request("https://"+key["node"]+"/api/v1/users/token",urlencode({"client_id":r["client_id"],"client_secret":r["client_secret"],"grant_type":"password","response_type":"code","username":key["account"],"password":key["password"]}).encode()),timeout=15).read().decode())
-urlopen(Request("https://"+key["node"]+"/api/v1/server/following",(json.dumps({"hosts":allNode})+"\n").encode("ascii"),headers={"Authorization":"Bearer "+token["access_token"],"Content-Type":"application/json"}),timeout=15).read().decode()
+urlopen(Request("https://"+key["node"]+"/api/v1/server/following",(json.dumps({"hosts":goodNode})+"\n").encode("ascii"),headers={"Authorization":"Bearer "+token["access_token"],"Content-Type":"application/json"}),timeout=15).read().decode()
 #-----------------------------------------finish
-sys.exit(1)
+sys.exit(0)

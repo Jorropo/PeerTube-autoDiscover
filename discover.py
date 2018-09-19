@@ -8,6 +8,7 @@ from urllib.request import Request, urlopen
 #-----------------------------------------global declaration
 toScan = []
 allNode = []
+goodNode = []
 instancesList = []
 
 #-----------------------------------------argument processing
@@ -36,17 +37,17 @@ try: #try for don't crash on ctrl + C
                 if t not in allNode:
                     allNode.append(t)
                     toScan.append(t)
+            goodNode.append(searchIng)
         except KeyboardInterrupt:
             raise Exception('Pass out this error.')
         except:
-            allNode.remove(searchIng)
             sys.stderr.write("error on contacting " + searchIng + "\n")
 except:
     sys.stderr.write("canceled\n")
 
 #-----------------------------------------result usage
-for i in allNode:
+for i in goodNode:
     sys.stdout.write(i+"\n")
 
 #-----------------------------------------finish
-sys.exit(1)
+sys.exit(0)
