@@ -10,6 +10,20 @@ toScan = []
 allNode = []
 goodNode = []
 instancesList = []
+def getListFollowing(test):
+    nc = json.loads(urlopen(Request("https://"+test+"/api/v1/server/following?count=0"), timeout=15).read().decode())["total"]
+    nt = []
+    for i in range(0,nc,100):
+        for i in json.loads(urlopen(Request("https://"+test+"/api/v1/server/following?count=100&start="+str(i)), timeout=15).read().decode())["data"]:
+            nt.append(i["following"]["host"])
+    return nt
+def getListFollowers(test):
+    nc = json.loads(urlopen(Request("https://"+test+"/api/v1/server/followers?count=0"), timeout=15).read().decode())["total"]
+    nt = []
+    for i in range(0,nc,100):
+        for i in json.loads(urlopen(Request("https://"+test+"/api/v1/server/followers?count=100&start="+str(i)), timeout=15).read().decode())["data"]:
+            nt.append(i["follower"]["host"])
+    return nt
 
 #-----------------------------------------argument processing
 if len(sys.argv) != 2:
@@ -27,16 +41,14 @@ try: #try for don't crash on ctrl + C
     while len(toScan) > 0:
         searchIng = toScan.pop(0)
         try: #try for don't crash on urllib fail
-            for i in json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/following?count="+str(json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/following?count=0"), timeout=15).read().decode())["total"])), timeout=15).read().decode())["data"]:
-                t = i["following"]["host"]
-                if t not in allNode:
-                    allNode.append(t)
-                    toScan.append(t)
-            for i in json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/followers?count="+str(json.loads(urlopen(Request("https://"+searchIng+"/api/v1/server/followers?count=0"), timeout=15).read().decode())["total"])), timeout=15).read().decode())["data"]:
-                t = i["follower"]["host"]
-                if t not in allNode:
-                    allNode.append(t)
-                    toScan.append(t)
+            for i in getListFollowing(searchIng):
+                if i not in allNode:
+                    allNode.append(i)
+                    toScan.append(i)
+            for i in getListFollowers(searchIng):
+                if i not in allNode:
+                    allNode.append(i)
+                    toScan.append(i)
             goodNode.append(searchIng)
         except KeyboardInterrupt:
             raise Exception('Pass out this error.')
