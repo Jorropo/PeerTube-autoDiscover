@@ -16,8 +16,8 @@ def getListFollowing(test):
     nc = json.loads(urlopen(Request("https://"+test+"/api/v1/server/following?count=0"), timeout=15).read().decode())["total"]
     nt = []
     for i in range(0,nc,100):
-    for i in json.loads(urlopen(Request("https://"+test+"/api/v1/server/following?count=100&start="+str(i)), timeout=15).read().decode())["data"]:
-        nt.append(i["following"]["host"])
+        for i in json.loads(urlopen(Request("https://"+test+"/api/v1/server/following?count=100&start="+str(i)), timeout=15).read().decode())["data"]:
+            nt.append(i["following"]["host"])
     return nt
 def getListFollowers(test):
     nc = json.loads(urlopen(Request("https://"+test+"/api/v1/server/followers?count=0"), timeout=15).read().decode())["total"]
