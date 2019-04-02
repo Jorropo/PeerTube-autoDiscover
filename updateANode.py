@@ -1,31 +1,15 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.7
 #-----------------------------------------import
 import json
 import sys
 import os
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+from ptDiscover import discoverSync
 
 #-----------------------------------------global declaration
-toScan = []
-allNode = []
-goodNode = []
 instancesList = []
 key = []
-def getListFollowing(test):
-    nc = json.loads(urlopen(Request("https://"+test+"/api/v1/server/following?count=0"), timeout=15).read().decode())["total"]
-    nt = []
-    for i in range(0,nc,100):
-        for i in json.loads(urlopen(Request("https://"+test+"/api/v1/server/following?count=100&start="+str(i)), timeout=15).read().decode())["data"]:
-            nt.append(i["following"]["host"])
-    return nt
-def getListFollowers(test):
-    nc = json.loads(urlopen(Request("https://"+test+"/api/v1/server/followers?count=0"), timeout=15).read().decode())["total"]
-    nt = []
-    for i in range(0,nc,100):
-    for i in json.loads(urlopen(Request("https://"+test+"/api/v1/server/followers?count=100&start="+str(i)), timeout=15).read().decode())["data"]:
-        nt.append(i["follower"]["host"])
-    return nt
 
 #-----------------------------------------key conf loading
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -39,32 +23,11 @@ f = open("secret.json","r")
 key = json.loads(f.read())
 f.close()
 
-toScan.append(key["node"])
-allNode = toScan.copy()
-
-#-----------------------------------------discovery
-try: #try for don't crash on ctrl + C
-    while len(toScan) > 0:
-        searchIng = toScan.pop(0)
-        try: #try for don't crash on urllib fail
-            for i in getListFollowing(searchIng):
-                if i not in allNode:
-                    allNode.append(i)
-                    toScan.append(i)
-            for i in getListFollowers(searchIng):
-                if i not in allNode:
-                    allNode.append(i)
-                    toScan.append(i)
-            goodNode.append(searchIng)
-        except KeyboardInterrupt:
-            raise Exception('Pass out this error.')
-        except:
-            sys.stderr.write("error on contacting " + searchIng + "\n")
-except:
-    sys.stderr.write("canceled\n")
+#-----------------------------------------Discover
+goodNode = discoverSync([key["node"]])
 
 #-----------------------------------------leave and error on empty list
-allNode.remove(key["node"])#don't send them self to the node we are seeding
+goodNode.remove(key["node"])#don't send them self to the node we are seeding
 if len(goodNode) == 0:
     sys.stderr.write("node other node than original were found, you must follow or been followed by an already integrated node\n")
     sys.exit(3)

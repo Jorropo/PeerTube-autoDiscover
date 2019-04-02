@@ -3,7 +3,7 @@ Auto discover new peertube node by your self, this program isn't depends of a no
 
 Doesn't require human intervantion for discovering new nodes, how ? This program ask to each already known node her list of known nodes and retry until all nodes were discovered.
 
-This make it a little slow, (2-15 minutes execution time), if you do it with cron you shouldn't lunch it more than one each hours.
+It use asyncio to request multiple nodes at the same time.
 
 ## Usage
 ```sh
@@ -18,6 +18,15 @@ If no node is given it will use the instances list to seed.
 ```
 ```sh
 ./discover.py #use instances list to seed
+```
+# Install
+You must install aiohttp and you should install aiodns to speed up dns resolution.
+```
+sudo python3.7 -m pip install aiohttp aiodns
+```
+You also need python 3.7 if you don't have it already (at the time I write this lines, default python3 on ubuntu is 3.6)
+```
+sudo apt install python3.7
 ```
 # Update a node
 For that to work you must follow or be followed by an already integrated node (manualy a node that follow other like peertube.jorropo.ovh)
@@ -44,3 +53,6 @@ Example :
 ```
 # Instances List update
 Use it as the same of discover but you don't need to do somethings with stdout, this program will update instances list.
+
+# Error ?
+If you see some ssl errors, this is a wrong configuration with this node, this is harmless and they should be catched by a try but right now there is a bug with this.
