@@ -55,6 +55,7 @@ func addToInstancesList(node string) {
 			return fmt.Errorf("creating the request: %w", err)
 		}
 		req.Header.Add("User-Agent", userAgent)
+		req.Header.Add("Content-Type", "application/json")
 
 		res, err := http.DefaultClient.Do(req)
 		if err != nil {
