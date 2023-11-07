@@ -92,13 +92,13 @@ func foundGoodNode(node string) {
 	wg.Add(1)
 	go func() {
 		goodNodesLk.Lock()
-		defer goodNodesLk.Unlock()
-
 		if _, ok := goodNodes[node]; ok {
+			goodNodesLk.Unlock()
 			wg.Done()
 			return
 		}
 		goodNodes[node] = struct{}{}
+		goodNodesLk.Unlock()
 
 		// addToInstancesList will call wg.Done
 		addToInstancesList(node)
