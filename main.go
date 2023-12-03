@@ -22,6 +22,8 @@ var nodesLk sync.Mutex
 var goodNodes = map[string]struct{}{}
 var goodNodesLk sync.Mutex
 var wg sync.WaitGroup
+var throttle = make(chan struct{}, 256)
+var throttleAdd = make(chan struct{}, 2)
 
 // foundNode must be called while holding [nodesLk].
 func foundNode(from, node string) {
@@ -43,6 +45,8 @@ type Add struct {
 
 func addToInstancesList(node string) {
 	defer wg.Done()
+	throttleAdd <- struct{}{}
+	defer func() { <-throttleAdd }()
 
 	if err := func() error {
 		format, err := json.Marshal(Add{node})
@@ -118,6 +122,9 @@ type nodeResponse struct {
 }
 
 func doRequestToNode(node string, queryFollower bool, skip uint) (out nodeResponse, err error) {
+	throttle <- struct{}{}
+	defer func() { <-throttle }()
+
 	verb := "following"
 	if queryFollower {
 		verb = "followers"
