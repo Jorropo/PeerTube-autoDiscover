@@ -54,10 +54,14 @@ func addToInstancesList(node string) {
 			return fmt.Errorf("serializing: %w", err)
 		}
 
+		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+		defer cancel()
+
 		req, err := http.NewRequest(http.MethodPost, "https://instances.joinpeertube.org/api/v1/instances", bytes.NewReader(format))
 		if err != nil {
 			return fmt.Errorf("creating the request: %w", err)
 		}
+		req = req.WithContext(ctx)
 		req.Header.Add("User-Agent", userAgent)
 		req.Header.Add("Content-Type", "application/json")
 
