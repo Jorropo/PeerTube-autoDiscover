@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -12,6 +13,8 @@ import (
 	"sync"
 	"time"
 )
+
+var client = http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}}
 
 const userAgent = "github.com/Jorropo/peerTube-autoDiscover"
 
@@ -148,7 +151,7 @@ func doRequestToNode(node string, queryFollower bool, skip uint) (out nodeRespon
 	}
 	req.Header.Add("User-Agent", userAgent)
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := client.Do(req)
 	if err != nil {
 		return out, fmt.Errorf("requesting: %w", err)
 	}
@@ -238,7 +241,7 @@ func doRequestToInstanceList(skip uint) (out instancesListResponse, err error) {
 	}
 	req.Header.Add("User-Agent", userAgent)
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := client.Do(req)
 	if err != nil {
 		return out, fmt.Errorf("requesting: %w", err)
 	}
